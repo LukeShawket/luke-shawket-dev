@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Warm, creamy light mocha */
+  --background: #F5E8D8;
+  --foreground: #1C1C1C;
+}
+
+.dark {
+  /* Deep, slate dark forest green */
+  --background: #1C1C1C;
+  --foreground: #F5E8D8;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
