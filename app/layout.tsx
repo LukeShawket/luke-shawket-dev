@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Luke Shawket | Developer & Business Systems Analyst",
-  description: "Personal portfolio, project showcase, notes, and web experiments.",
+  title: "Luke Shawket | Developer",
+  description: "Personal Website, projects, blogs, and experiments.",
 };
 
 export default function RootLayout({

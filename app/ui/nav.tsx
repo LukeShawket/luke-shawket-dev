@@ -17,7 +17,7 @@ export function Nav() {
         {/* Brand Logo with globe.svg */}
         <Link href="/" className="group relative flex items-center justify-center overflow-hidden rounded-full p-0.5 border-2 border-emerald-500/70 transition-all duration-300 group-hover:border-emerald-400 group-hover:shadow-[0_0_12px_#10b981]">
           <Image
-            src="/luke.png"
+            src="/profile.ico"
             alt="Luke Shawket profile picture"
             width={36}
             height={36}
