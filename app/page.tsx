@@ -14,7 +14,7 @@ export default async function Home() {
   // Fetch latest blogs, GitHub projects, and gallery items dynamically
   const latestBlogs = await getLatestPosts(2);
   const latestProjects = await getLatestProjects(2);
-  const latestImages = await fetchLatestGalleryItems(6);
+  const latestImages = await fetchLatestGalleryItems();
 
   return (
     <div className="relative min-h-screen selection:bg-emerald-500 selection:text-white">
@@ -214,7 +214,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* GALLERY FRAME ARCHIVE SECTION (Replaces Playground) */}
+        /* GALLERY FRAME ARCHIVE SECTION
         {latestImages.length > 0 && (
           <GalleryFrame
             title="Latest Image Archive"
