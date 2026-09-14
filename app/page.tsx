@@ -3,13 +3,18 @@ import { Nav } from "@/app/ui/nav";
 import { Coffee, ArrowUpRight, Terminal, Sparkles, Star, GitFork, Tag } from "lucide-react";
 import { getLatestPosts } from "@/app/lib/posts";
 import { getLatestProjects } from "@/app/lib/projects";
-import Playground from "./ui/playground";
 import Subscribe from "./ui/subscribe";
+import GalleryFrame from "./ui/gallery-frame";
+import { fetchLatestGalleryItems } from "@/app/lib/fetch-images";
+
+// Force dynamic rendering to ensure fresh media archive updates
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  // Fetch latest blogs and GitHub projects dynamically
+  // Fetch latest blogs, GitHub projects, and gallery items dynamically
   const latestBlogs = await getLatestPosts(2);
   const latestProjects = await getLatestProjects(2);
+  const latestImages = await fetchLatestGalleryItems(6);
 
   return (
     <div className="relative min-h-screen selection:bg-emerald-500 selection:text-white">
@@ -45,18 +50,18 @@ export default async function Home() {
           <p className="mt-6 max-w-2xl text-lg text-[var(--foreground)]/70 sm:text-xl leading-relaxed">
             Welcome to my website!<br />
             This is where I write and share my projects.<br />
-            I'm a data professional with an interest in general programming and making video games.
+            I'm a data professional with an interest in data, machine learning and general programming.
           </p>
 
           {/* Action CTA Buttons */}
           <div className="mt-10 flex flex-wrap gap-4">
-            <Link
-              href="/projects"
+            <a
+              href="mailto:lukeshawket@outlook.com"
               className="group inline-flex items-center gap-2 rounded-full bg-emerald-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all hover:bg-emerald-600"
             >
               <span>Get in Touch</span>
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </Link>
+            </a>
             <Link
               href="/blogs"
               className="inline-flex items-center justify-center rounded-full border border-[var(--foreground)]/10 bg-[var(--foreground)]/5 px-6 py-3.5 text-sm font-semibold text-[var(--foreground)] backdrop-blur-sm transition-all hover:bg-[var(--foreground)]/10"
@@ -75,7 +80,7 @@ export default async function Home() {
             <div>
               <div className="flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                 <Sparkles className="h-3.5 w-3.5" />
-                Notes & Insights
+                Notes &amp; Insights
               </div>
               <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
                 Latest Blog Posts
@@ -209,9 +214,14 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Playground / Interactive Games Section */}
-        <Playground />
-
+        {/* GALLERY FRAME ARCHIVE SECTION (Replaces Playground) */}
+        {latestImages.length > 0 && (
+          <GalleryFrame
+            title="Latest Image Archive"
+            subtitle="Media Vault"
+            items={latestImages}
+          />
+        )}
       </main>
     </div>
   );

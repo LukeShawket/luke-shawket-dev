@@ -40,7 +40,7 @@ export default async function BlogsPage() {
             Blogs & Thoughts
           </h1>
           <p className="max-w-2xl text-lg text-[var(--foreground)]/70">
-            I share my thoughts and projects here, while working on my writing skills in English along the way.
+            I write here.
           </p>
         </section>
 

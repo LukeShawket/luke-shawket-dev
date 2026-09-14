@@ -1,12 +1,9 @@
 import { Nav } from "@/app/ui/nav";
 import GalleryFrame from "../ui/gallery-frame";
-import { fetchImagesFromFolder } from "../lib/fetch-images";
+import { fetchAllGalleryCategories } from "../lib/fetch-images";
 
 export default async function Gallery() {
-  const photosData = await fetchImagesFromFolder("photos", "Photography");
-  const drawingsData = await fetchImagesFromFolder("drawings", "Artwork");
-  const gadgetsData = await fetchImagesFromFolder("gadgets", "Electronics");
-  const gamesData = await fetchImagesFromFolder("games", "Game Vault");
+  const { photos, drawings, gadgets, games } = await fetchAllGalleryCategories();
 
   return (
     <div className="relative min-h-screen selection:bg-emerald-500 selection:text-white">
@@ -36,20 +33,20 @@ export default async function Gallery() {
           </p>
         </section>
 
-        {photosData.length > 0 && (
-          <GalleryFrame title="Photos" subtitle="Photography" items={photosData} />
+        {photos.length > 0 && (
+          <GalleryFrame title="Photos" subtitle="Photography" items={photos} />
         )}
 
-        {drawingsData.length > 0 && (
-          <GalleryFrame title="Arts & Drawings" subtitle="Artwork" items={drawingsData} />
+        {drawings.length > 0 && (
+          <GalleryFrame title="Arts &amp; Drawings" subtitle="Artwork" items={drawings} />
         )}
 
-        {gadgetsData.length > 0 && (
-          <GalleryFrame title="Gadgets & Tech" subtitle="Electronics" items={gadgetsData} />
+        {gadgets.length > 0 && (
+          <GalleryFrame title="Gadgets &amp; Tech" subtitle="Electronics" items={gadgets} />
         )}
 
-        {gamesData.length > 0 && (
-          <GalleryFrame title="Game Collection" subtitle="Vault" items={gamesData} />
+        {games.length > 0 && (
+          <GalleryFrame title="Game Collection" subtitle="Vault" items={games} />
         )}
       </main>
     </div>

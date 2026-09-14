@@ -1,22 +1,28 @@
 import { FrameItem } from "../ui/gallery-frame";
 
-interface GitHubContentItem {
-  name: string;
-  path: string;
-  type: string;
+export interface ImageMetadata {
+  category: "photos" | "drawings" | "gadgets" | "games";
+  fileName: string;
+  title: string;
+  date?: string;
+  description?: string;
+  tag?: string;
+}
+
+export interface InternalFrameItem extends FrameItem {
+  timestamp: number;
 }
 
 const GITHUB_USER = "LukeShawket";
 const GITHUB_REPO = "images";
 const BRANCH = "main";
 
-function parseDateString(dateStr: string): string {
-  if (dateStr.length !== 6) return dateStr;
-  const month = parseInt(dateStr.substring(0, 2), 10) - 1;
-  const day = parseInt(dateStr.substring(2, 4), 10);
-  const year = 2000 + parseInt(dateStr.substring(4, 6), 10);
-
-  const date = new Date(year, month, day);
+/**
+ * Formats standard ISO dates ("YYYY-MM-DD") to readable strings ("MMM DD, YYYY")
+ */
+function formatDate(dateStr?: string): string {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
   return isNaN(date.getTime())
     ? dateStr
     : date.toLocaleDateString("en-US", {
@@ -26,96 +32,112 @@ function parseDateString(dateStr: string): string {
       });
 }
 
-export async function fetchImagesFromFolder(
-  folderName: string,
-  defaultTag: string
-): Promise<FrameItem[]> {
+/**
+ * Parses date string into Unix timestamp (defaults to 0 if missing/invalid)
+ */
+function parseTimestamp(dateStr?: string): number {
+  if (!dateStr) return 0;
+  const time = new Date(dateStr).getTime();
+  return isNaN(time) ? 0 : time;
+}
+
+/**
+ * Fetches the root metadata.json file directly from GitHub without Next.js caching delays.
+ */
+export async function fetchAllGalleryCategories(): Promise<{
+  photos: FrameItem[];
+  drawings: FrameItem[];
+  gadgets: FrameItem[];
+  games: FrameItem[];
+}> {
+  const emptyResult = { photos: [], drawings: [], gadgets: [], games: [] };
+
   try {
-    const headers: Record<string, string> = {
-      Accept: "application/vnd.github.v3+json",
-      "User-Agent": "LukeShawket-Website",
-    };
+    const rawJsonUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${BRANCH}/metadata.json?t=${Date.now()}`;
 
-    // Use token if available in .env.local to avoid rate limits
-    if (process.env.GITHUB_TOKEN) {
-      headers["Authorization"] = `Bearer ${process.env.GITHUB_TOKEN}`;
-    }
-
-    const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${folderName}?ref=${BRANCH}`;
-    
-    const res = await fetch(apiUrl, {
-      next: { revalidate: 3600 },
-      headers,
+    const res = await fetch(rawJsonUrl, {
+      cache: "no-store",
+      headers: {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        Pragma: "no-cache",
+      },
     });
 
     if (!res.ok) {
-      const errorText = await res.text();
-      console.error(
-        `[GitHub API Error] Folder: "${folderName}" | Status: ${res.status} ${res.statusText}`
-      );
-      console.error(`[GitHub API Details]:`, errorText);
-      return [];
+      console.warn(`[Metadata Warning] Failed to fetch root metadata.json (${res.status}).`);
+      return emptyResult;
     }
 
-    const data: GitHubContentItem[] = await res.json();
+    const items: ImageMetadata[] = await res.json();
 
-    if (!Array.isArray(data)) {
-      console.warn(`[GitHub API Warning] ${folderName} did not return an array. Data:`, data);
-      return [];
+    if (!Array.isArray(items)) {
+      console.warn("[Metadata Error] Root metadata.json is not an array.");
+      return emptyResult;
     }
 
-    const imageExtensions = [".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"];
-    const imageFiles = data.filter(
-      (file) =>
-        file.type === "file" &&
-        imageExtensions.some((ext) => file.name.toLowerCase().endsWith(ext))
-    );
+    const result = {
+      photos: [] as FrameItem[],
+      drawings: [] as FrameItem[],
+      gadgets: [] as FrameItem[],
+      games: [] as FrameItem[],
+    };
 
-    console.log(`[Gallery Success] Folder "${folderName}": found ${imageFiles.length} images.`);
+    items.forEach((item) => {
+      if (!item.category || !item.fileName) return;
 
-    return imageFiles.map((file) => {
-      const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
-      const parts = fileNameWithoutExt.split("-");
+      const formattedDate = formatDate(item.date);
+      const encodedCategory = encodeURIComponent(item.category);
+      const encodedFileName = encodeURIComponent(item.fileName);
 
-      let formattedDate = "";
-      let location = "";
-      let rawDescription = fileNameWithoutExt;
+      const imageUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${BRANCH}/${encodedCategory}/${encodedFileName}`;
 
-      if (parts.length >= 3) {
-        formattedDate = parseDateString(parts[0].trim());
-        location = parts[1].trim().toUpperCase();
-        rawDescription = parts.slice(2).join(" ").trim();
-      } else if (parts.length === 2) {
-        location = parts[0].trim().toUpperCase();
-        rawDescription = parts[1].trim();
+      // Badge priority: Formatted Date -> Custom Tag -> Category Fallback
+      let metaTag = "";
+      if (formattedDate) {
+        metaTag = formattedDate;
+      } else if (item.tag) {
+        metaTag = item.tag;
+      } else {
+        metaTag = item.category.toUpperCase();
       }
 
-      const title = rawDescription.replace(/\b\w/g, (c) => c.toUpperCase());
-
-      // Safely encode paths containing spaces or special characters
-      const encodedPath = file.path
-        .split("/")
-        .map((segment) => encodeURIComponent(segment))
-        .join("/");
-
-      const imageUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${BRANCH}/${encodedPath}`;
-
-      const metaTag = location
-        ? `${location}${formattedDate ? ` • ${formattedDate}` : ""}`
-        : defaultTag;
-
-      return {
-        id: file.path,
-        title,
+      const frameItem: InternalFrameItem = {
+        id: `${item.category}/${item.fileName}`,
+        title: item.title || item.fileName,
         image: imageUrl,
-        description: location
-          ? `Captured in ${location}${formattedDate ? ` on ${formattedDate}` : ""}.`
-          : title,
+        description: item.description || item.title || item.fileName,
         tag: metaTag,
+        timestamp: parseTimestamp(item.date),
       };
+
+      if (result[item.category]) {
+        result[item.category].push(frameItem);
+      }
     });
+
+    return result;
   } catch (error) {
-    console.error(`[Fetch Exception] Failed to fetch folder "${folderName}":`, error);
-    return [];
+    console.error("[Fetch Exception] Failed loading gallery metadata:", error);
+    return emptyResult;
   }
+}
+
+/**
+ * Fetches, sorts by newest date, and returns the top N images across all categories.
+ */
+export async function fetchLatestGalleryItems(limit: number = 4): Promise<FrameItem[]> {
+  const categories = await fetchAllGalleryCategories();
+
+  const allItems = (
+    [
+      ...categories.photos,
+      ...categories.drawings,
+      ...categories.gadgets,
+      ...categories.games,
+    ] as InternalFrameItem[]
+  );
+
+  allItems.sort((a, b) => b.timestamp - a.timestamp);
+
+  return allItems.slice(0, limit).map(({ timestamp, ...item }) => item);
 }
