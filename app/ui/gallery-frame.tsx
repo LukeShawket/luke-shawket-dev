@@ -91,7 +91,7 @@ export default function GalleryFrame({ title, subtitle, items }: GalleryFramePro
             {/* Item Meta */}
             {item.tag && (
               <span className="inline-block rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mb-1.5">
-                #{item.tag}
+                {item.tag}
               </span>
             )}
             <h3 className="text-base font-bold transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400 truncate">
@@ -136,7 +136,7 @@ export default function GalleryFrame({ title, subtitle, items }: GalleryFramePro
             <div className="mt-4 text-center sm:text-left">
               {selectedImage.tag && (
                 <span className="inline-block rounded-md bg-emerald-500/10 px-2.5 py-1 font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
-                  #{selectedImage.tag}
+                  {selectedImage.tag}
                 </span>
               )}
               <h3 className="text-2xl font-bold tracking-tight">

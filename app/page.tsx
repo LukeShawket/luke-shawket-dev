@@ -14,7 +14,7 @@ export default async function Home() {
   // Fetch latest blogs, GitHub projects, and gallery items dynamically
   const latestBlogs = await getLatestPosts(2);
   const latestProjects = await getLatestProjects(2);
-  const latestImages = await fetchLatestGalleryItems();
+  const latestImages = await fetchLatestGalleryItems(4);
 
   return (
     <div className="relative min-h-screen selection:bg-emerald-500 selection:text-white">
