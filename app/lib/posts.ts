@@ -4,7 +4,6 @@ export interface BlogPost {
   title: string;
   slug: string;
   date: string;
-  readTime: string;
   category: string;
   snippet: string;
   tags: string[];
@@ -75,14 +74,20 @@ export async function getAllPosts(): Promise<BlogPost[]> {
         const filename = file.path.split("/").pop() || file.path;
         const rawSlug = frontmatter.slug || filename;
 
+        // Strip leading '#' from tags automatically
+        const rawTags = Array.isArray(frontmatter.tags) ? frontmatter.tags : [];
+        const cleanedTags = rawTags.map((tag: string) =>
+          String(tag).replace(/^#/, "").trim()
+        );
+
         return {
           title: frontmatter.title || "Untitled Post",
           slug: slugify(rawSlug), // Ensures every stored slug is normalized
-          date: frontmatter.date || "Recent",
-          readTime: frontmatter.readTime || "3 min read",
-          category: frontmatter.category || (frontmatter.tags && frontmatter.tags[0]) || "General",
+          date: frontmatter.date ? String(frontmatter.date) : "Recent",
+          category:
+            frontmatter.category || cleanedTags[0] || "General",
           snippet: frontmatter.description || frontmatter.snippet || "",
-          tags: Array.isArray(frontmatter.tags) ? frontmatter.tags : [],
+          tags: cleanedTags,
           published: frontmatter.published !== false,
           featured: Boolean(frontmatter.featured),
           content: content || undefined,
@@ -103,4 +108,19 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   const posts = await getAllPosts();
   const targetSlug = slugify(slug);
   return posts.find((p) => p.slug === targetSlug) || null;
+}
+
+/**
+ * Fetches the specific '01-26' / 'about-my-website' post dynamically
+ */
+export async function getAboutWebsitePost(): Promise<BlogPost | null> {
+  const posts = await getAllPosts();
+  return (
+    posts.find(
+      (p) =>
+        p.slug === "01-26" ||
+        p.slug === "about-my-website" ||
+        p.title.toLowerCase().includes("about my website")
+    ) || null
+  );
 }

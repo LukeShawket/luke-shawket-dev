@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { Nav } from "@/app/ui/nav";
-import { Sparkles, ArrowUpRight, Calendar, Tag } from "lucide-react";
+import { Sparkles, ArrowUpRight, Calendar } from "lucide-react";
 import { getAllPosts } from "@/app/lib/posts";
 import { BlogFeed } from "@/app/ui/blog-feed";
 
 export default async function BlogsPage() {
   const posts = await getAllPosts();
 
-  if (posts.length === 0) {
+  if (!posts || posts.length === 0) {
     return (
       <div className="relative min-h-screen">
         <Nav />
@@ -37,7 +37,7 @@ export default async function BlogsPage() {
             Writings
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl">
-            Blogs & Thoughts
+            Blogs &amp; Thoughts
           </h1>
           <p className="max-w-2xl text-lg text-[var(--foreground)]/70">
             I write here.
@@ -80,9 +80,9 @@ export default async function BlogsPage() {
                   {latestPost.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400"
+                      className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400"
                     >
-                      <Tag className="h-2.5 w-2.5" />#{tag}
+                      {tag}
                     </span>
                   ))}
                 </div>

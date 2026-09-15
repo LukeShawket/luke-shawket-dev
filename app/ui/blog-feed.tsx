@@ -71,9 +71,9 @@ export function BlogFeed({ posts }: BlogFeedProps) {
                   post.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400"
+                      className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400"
                     >
-                      #{tag}
+                      {tag}
                     </span>
                   ))
                 ) : (
@@ -83,6 +83,7 @@ export function BlogFeed({ posts }: BlogFeedProps) {
                 )}
               </div>
 
+              {/* Date Metadata Only */}
               <div className="flex items-center gap-3 font-mono text-xs text-[var(--foreground)]/50">
                 <span className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />

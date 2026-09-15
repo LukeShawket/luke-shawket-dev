@@ -12,13 +12,15 @@ import {
   Globe,
   Mail
 } from "lucide-react";
+import { getAboutWebsitePost } from "@/app/lib/posts";
 
 export const metadata: Metadata = {
   title: "About | Luke Shawket",
   description: "Learn more about Luke Shawket, background, technical skills, and experience.",
 };
 
-export default function About() {
+export default async function About() {
+  const aboutPost = await getAboutWebsitePost();
 
   const experience = [
     {
@@ -152,25 +154,41 @@ export default function About() {
 
         {/* ABOUT THIS SITE & RESUME LINKS */}
         <section className="py-12 border-t border-[var(--foreground)]/10 grid gap-6 sm:grid-cols-2">
-          {/* About This Website Link */}
-          <div className="group relative flex flex-col justify-between rounded-3xl border border-[var(--foreground)]/10 bg-[var(--foreground)]/5 p-7 backdrop-blur-md">
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                  <Globe className="h-4 w-4" /> SITE ARCHITECTURE
-                </span>
+          {/* Dynamic "About This Website" Card */}
+          {aboutPost ? (
+            <Link
+              href={`/blogs/${aboutPost.slug}`}
+              className="group relative flex flex-col justify-between rounded-3xl border border-[var(--foreground)]/10 bg-[var(--foreground)]/5 p-7 backdrop-blur-md transition-all duration-300 hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/5"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                    <Globe className="h-4 w-4" /> SITE ARCHITECTURE
+                  </span>
+                  <ArrowUpRight className="h-4 w-4 text-[var(--foreground)]/40 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-emerald-500" />
+                </div>
+                <h3 className="mt-4 text-xl font-bold tracking-tight transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                  {aboutPost.title}
+                </h3>
+                <p className="mt-2 text-sm text-[var(--foreground)]/70 leading-relaxed line-clamp-2">
+                  {aboutPost.snippet || "Read the write-up on how, why, and when this site was built."}
+                </p>
               </div>
-              <h3 className="mt-4 text-xl font-bold tracking-tight">
-                About This Website
-              </h3>
+              <div className="mt-6 font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                Read article &rarr;
+              </div>
+            </Link>
+          ) : (
+            <div className="rounded-3xl border border-[var(--foreground)]/10 bg-[var(--foreground)]/5 p-7 backdrop-blur-md">
+              <span className="flex items-center gap-2 font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                <Globe className="h-4 w-4" /> SITE ARCHITECTURE
+              </span>
+              <h3 className="mt-4 text-xl font-bold tracking-tight">About This Website</h3>
               <p className="mt-2 text-sm text-[var(--foreground)]/70 leading-relaxed">
-                Haven&apos;t written down this write-up yet.
+                Post loading...
               </p>
             </div>
-            <div className="mt-6 font-mono text-xs font-semibold text-[var(--foreground)]/40">
-              Coming soon &rarr;
-            </div>
-          </div>
+          )}
 
           {/* Resume Link */}
           <a
