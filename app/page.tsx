@@ -214,7 +214,7 @@ export default async function Home() {
           </div>
         </section>
 
-        /* GALLERY FRAME ARCHIVE SECTION
+        {/* GALLERY FRAME ARCHIVE SECTION */}
         {latestImages.length > 0 && (
           <GalleryFrame
             title="Latest Image Archive"

@@ -1,4 +1,3 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/app/ui/theme";
@@ -26,9 +25,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="scroll-smooth">
+    <html lang="en" suppressHydrationWarning className="scroll-smooth overflow-x-hidden">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen font-sans antialiased bg-[var(--background)] text-[var(--foreground)] selection:bg-emerald-500 selection:text-white transition-colors duration-200 flex flex-col justify-between`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen w-full max-w-full overflow-x-hidden font-sans antialiased bg-[var(--background)] text-[var(--foreground)] selection:bg-emerald-500 selection:text-white transition-colors duration-200 flex flex-col justify-between`}
       >
         <ThemeProvider
           attribute="class"
@@ -36,7 +35,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div>{children}</div>
+          <main className="w-full max-w-full overflow-x-hidden flex-1">
+            {children}
+          </main>
           <Footer />
         </ThemeProvider>
       </body>
