@@ -107,7 +107,7 @@ export default async function About() {
                 <div className="flex items-center gap-2 font-mono text-xs text-[var(--foreground)]/60">
                   <Cpu className="h-4 w-4 text-emerald-500" /> OS / Environment
                 </div>
-                <div className="mt-1 font-semibold">Arch Linux / Windows Dual-Boot</div>
+                <div className="mt-1 font-semibold">Linux / Windows Dual-Boot</div>
               </div>
             </div>
           </div>
