@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   // Fetch latest blogs, GitHub projects, and gallery items dynamically
   const latestBlogs = await getLatestPosts(2);
-  const latestProjects = await getLatestProjects(2);
+  const latestProjects = await getLatestProjects(6);
   const latestImages = await fetchLatestGalleryItems(4);
 
   return (
@@ -115,7 +115,7 @@ export default async function Home() {
                             key={tag}
                             className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400"
                           >
-                            <Tag className="h-2.5 w-2.5" />#{tag}
+                            <Tag className="h-2.5 w-2.5" />{tag}
                           </span>
                         ))
                       ) : (
@@ -174,7 +174,7 @@ export default async function Home() {
                 No repositories found.
               </p>
             ) : (
-              latestProjects.map((project) => (
+              latestProjects.slice(0, 2).map((project) => (
                 <a
                   key={project.slug}
                   href={project.url}

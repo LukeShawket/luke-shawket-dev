@@ -40,7 +40,7 @@ export default async function BlogsPage() {
             Blogs &amp; Thoughts
           </h1>
           <p className="max-w-2xl text-lg text-[var(--foreground)]/70">
-            I write here.
+            Long-form writing on code, technology, and everything in between.
           </p>
         </section>
 
@@ -98,10 +98,6 @@ export default async function BlogsPage() {
 
         {/* Articles Feed */}
         <section className="mt-16 space-y-4">
-          <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--foreground)]/50">
-            All Articles ({regularPosts.length})
-          </h2>
-
           <BlogFeed posts={regularPosts.length > 0 ? regularPosts : posts} />
         </section>
       </main>

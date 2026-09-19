@@ -11,6 +11,9 @@ export interface Project {
   topics: string[];
 }
 
+// Repositories you want to exclude (use exact GitHub repo names or lowercase)
+const IGNORED_REPOS = ["LukeShawket", "blogs", "images"];
+
 /**
  * Fetches repositories from GitHub, sorted by most recently updated.
  * Uses pagination parameters to fetch in chunks (e.g., 10 per page).
@@ -41,9 +44,11 @@ export async function getGitHubRepos(page: number = 1, perPage: number = 10): Pr
 
     const repos = await res.json();
 
-    // Filter out forks or profile repos (e.g., LukeShawket/LukeShawket) if desired
+    // Filter out forks and any repositories defined in IGNORED_REPOS
     const publicProjects = repos.filter(
-      (repo: any) => !repo.fork && repo.name.toLowerCase() !== "lukeshawket"
+      (repo: any) =>
+        !repo.fork &&
+        !IGNORED_REPOS.includes(repo.name.toLowerCase())
     );
 
     return publicProjects.map((repo: any) => {

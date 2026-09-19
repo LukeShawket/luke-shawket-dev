@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Calendar } from "lucide-react";
+import { ArrowUpRight, Calendar, Filter, X } from "lucide-react";
 import { BlogPost } from "@/app/lib/posts";
 
 interface BlogFeedProps {
@@ -11,6 +11,39 @@ interface BlogFeedProps {
 
 export function BlogFeed({ posts }: BlogFeedProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [selectedYear, setSelectedYear] = useState<string>("ALL");
+  const [selectedTag, setSelectedTag] = useState<string>("ALL");
+
+  // Extract available years
+  const availableYears = useMemo(() => {
+    const years = new Set<string>();
+    posts.forEach((post) => {
+      if (post.date) {
+        const year = new Date(post.date).getFullYear().toString();
+        if (!isNaN(Number(year))) years.add(year);
+      }
+    });
+    return Array.from(years).sort((a, b) => Number(b) - Number(a));
+  }, [posts]);
+
+  // Extract available tags
+  const availableTags = useMemo(() => {
+    const tags = new Set<string>();
+    posts.forEach((post) => {
+      post.tags?.forEach((tag) => tags.add(tag));
+    });
+    return Array.from(tags).sort();
+  }, [posts]);
+
+  // Filter posts
+  const filteredPosts = useMemo(() => {
+    return posts.filter((post) => {
+      const postYear = post.date ? new Date(post.date).getFullYear().toString() : null;
+      const matchesYear = selectedYear === "ALL" || postYear === selectedYear;
+      const matchesTag = selectedTag === "ALL" || post.tags?.includes(selectedTag);
+      return matchesYear && matchesTag;
+    });
+  }, [posts, selectedYear, selectedTag]);
 
   const handleScroll = () => {
     const container = containerRef.current;
@@ -42,69 +75,134 @@ export function BlogFeed({ posts }: BlogFeedProps) {
 
   useEffect(() => {
     handleScroll();
-    
-    // Recalculate transforms on window resize to prevent layout collapse
     window.addEventListener("resize", handleScroll);
     return () => window.removeEventListener("resize", handleScroll);
-  }, [posts]);
+  }, [filteredPosts]);
+
+  const hasActiveFilter = selectedYear !== "ALL" || selectedTag !== "ALL";
 
   return (
-    <div
-      ref={containerRef}
-      onScroll={handleScroll}
-      className="max-h-[560px] overflow-y-auto overflow-x-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden divide-y divide-[var(--foreground)]/10 border-t border-b border-[var(--foreground)]/10 py-2"
-      style={{ scrollBehavior: "smooth" }}
-    >
-      {posts.map((post, idx) => (
-        <div
-          key={`${post.slug}-${idx}`}
-          className="blog-card-item py-5 px-2 transition-all duration-200 ease-out origin-center flex flex-col justify-center"
-        >
-          <Link
-            href={`/blogs/${post.slug}`}
-            className="group block transition-colors"
-          >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              {/* Category / Tags Pills */}
-              <div className="flex flex-wrap items-center gap-1.5">
-                {post.tags && post.tags.length > 0 ? (
-                  post.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400"
-                    >
-                      {tag}
-                    </span>
-                  ))
-                ) : (
-                  <span className="font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                    {post.category}
-                  </span>
-                )}
-              </div>
+    <div className="space-y-3">
+      {/* Subtle Top Controls Bar */}
+      <div className="flex items-center justify-between font-mono text-xs text-[var(--foreground)]/50 px-1 pb-1">
+        <span className="uppercase tracking-wider">
+          All Articles ({filteredPosts.length})
+        </span>
 
-              {/* Date Metadata Only */}
-              <div className="flex items-center gap-3 font-mono text-xs text-[var(--foreground)]/50">
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  {post.date}
-                </span>
-              </div>
-            </div>
+        {/* Filters Top-Right Corner */}
+        <div className="flex items-center gap-2">
+          {hasActiveFilter && (
+            <button
+              onClick={() => {
+                setSelectedYear("ALL");
+                setSelectedTag("ALL");
+              }}
+              className="inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 transition-colors mr-1"
+              title="Clear filters"
+            >
+              <X className="h-3 w-3" />
+              <span className="hidden sm:inline">Reset</span>
+            </button>
+          )}
 
-            <h3 className="mt-2 text-xl font-bold tracking-tight transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400 flex items-center justify-between">
-              <span>{post.title}</span>
-              <ArrowUpRight className="h-4 w-4 opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-emerald-500" />
-            </h3>
+          {/* Year Dropdown */}
+          {availableYears.length > 0 && (
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="rounded-lg border border-[var(--foreground)]/10 bg-[var(--foreground)]/5 px-2 py-1 text-xs text-[var(--foreground)]/70 focus:border-emerald-500 focus:outline-none cursor-pointer"
+            >
+              <option value="ALL">Year: All</option>
+              {availableYears.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          )}
 
-            {post.snippet && (
-              <p className="mt-1.5 text-sm text-[var(--foreground)]/70 leading-relaxed line-clamp-2">
-                {post.snippet}
-              </p>
-            )}
-          </Link>
+          {/* Tag Dropdown */}
+          {availableTags.length > 0 && (
+            <select
+              value={selectedTag}
+              onChange={(e) => setSelectedTag(e.target.value)}
+              className="rounded-lg border border-[var(--foreground)]/10 bg-[var(--foreground)]/5 px-2 py-1 text-xs text-[var(--foreground)]/70 focus:border-emerald-500 focus:outline-none cursor-pointer"
+            >
+              <option value="ALL">Tag: All</option>
+              {availableTags.map((tag) => (
+                <option key={tag} value={tag}>
+                  {tag}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
-      ))}
+      </div>
+
+      {/* Scrollable Feed Container */}
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className="max-h-[560px] overflow-y-auto overflow-x-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden divide-y divide-[var(--foreground)]/10 border-t border-b border-[var(--foreground)]/10 py-2"
+        style={{ scrollBehavior: "smooth" }}
+      >
+        {filteredPosts.length === 0 ? (
+          <div className="py-12 text-center font-mono text-xs text-[var(--foreground)]/50">
+            No articles found matching criteria.
+          </div>
+        ) : (
+          filteredPosts.map((post, idx) => (
+            <div
+              key={`${post.slug}-${idx}`}
+              className="blog-card-item py-5 px-2 transition-all duration-200 ease-out origin-center flex flex-col justify-center"
+            >
+              <Link
+                href={`/blogs/${post.slug}`}
+                className="group block transition-colors"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  {/* Category / Tags Pills */}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {post.tags && post.tags.length > 0 ? (
+                      post.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400"
+                        >
+                          {tag}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                        {post.category}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Date Metadata Only */}
+                  <div className="flex items-center gap-3 font-mono text-xs text-[var(--foreground)]/50">
+                    <span className="flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {post.date}
+                    </span>
+                  </div>
+                </div>
+
+                <h3 className="mt-2 text-xl font-bold tracking-tight transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400 flex items-center justify-between">
+                  <span>{post.title}</span>
+                  <ArrowUpRight className="h-4 w-4 opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-emerald-500" />
+                </h3>
+
+                {post.snippet && (
+                  <p className="mt-1.5 text-sm text-[var(--foreground)]/70 leading-relaxed line-clamp-2">
+                    {post.snippet}
+                  </p>
+                )}
+              </Link>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
