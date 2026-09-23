@@ -43,25 +43,12 @@ export function Footer() {
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         {/* Brand & Copyright */}
         <div className="flex items-center gap-2">
-          <Link href="/" className="group relative flex items-center justify-center overflow-hidden rounded-full p-0.5 border-2 border-emerald-500/70 transition-all duration-300 group-hover:border-emerald-400 group-hover:shadow-[0_0_12px_#10b981]">
-            <Image
-              src="/profile.ico"
-              alt="Luke Shawket profile picture"
-              width={36}
-              height={36}
-              className="h-9 w-9 rounded-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-
-            {/* Sweeping Light Ray / Scanline */}
-            <span className="absolute inset-0 -translate-y-full bg-gradient-to-b from-transparent via-emerald-400/50 to-transparent transition-transform duration-500 group-hover:translate-y-full" />
-          </Link>
-          <span className="text-[var(--foreground)]/30">•</span>
+          
           <p className="font-mono text-xs text-[var(--foreground)]/50">
             © {new Date().getFullYear()} Luke Shawket
           </p>
         </div>
 
-        <span className="hidden sm:inline text-[var(--foreground)]/30">•</span>
 
         {/* Social Links with Icons */}
         <div className="flex items-center gap-3">

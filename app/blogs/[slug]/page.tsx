@@ -7,7 +7,7 @@ import { getAllPosts, getPostBySlug, slugify } from "@/app/lib/posts";
 
 export const dynamicParams = true;
 
-// Custom MDX component styling (Works inside Server Components)
+// Custom MDX component styling
 const mdxComponents = {
   h2: (props: any) => (
     <h2
@@ -36,7 +36,7 @@ const mdxComponents = {
   li: (props: any) => <li className="pl-1" {...props} />,
   blockquote: (props: any) => (
     <blockquote
-      className="my-8 border-l-4 border-emerald-500 bg-emerald-500/5 px-6 py-4 rounded-r-2xl italic text-lg text-[var(--foreground)]/90"
+      className="my-8 border-l-4 border-[var(--foreground)] bg-[var(--foreground)]/[0.03] px-6 py-4 rounded-r-2xl italic text-lg text-[var(--foreground)]/90"
       {...props}
     />
   ),
@@ -45,7 +45,7 @@ const mdxComponents = {
     if (isInline) {
       return (
         <code
-          className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 font-mono text-sm font-medium text-emerald-600 dark:text-emerald-400"
+          className="rounded-md bg-[var(--foreground)]/10 px-1.5 py-0.5 font-mono text-sm font-medium text-[var(--foreground)]"
           {...props}
         />
       );
@@ -60,7 +60,7 @@ const mdxComponents = {
   hr: () => <hr className="my-12 border-t border-[var(--foreground)]/10" />,
   a: (props: any) => (
     <a
-      className="font-medium text-emerald-600 dark:text-emerald-400 underline decoration-emerald-500/30 underline-offset-4 transition-colors hover:decoration-emerald-500"
+      className="font-medium text-[var(--foreground)] underline decoration-[var(--foreground)]/30 underline-offset-4 transition-colors hover:decoration-[var(--foreground)]"
       target="_blank"
       rel="noopener noreferrer"
       {...props}
@@ -96,9 +96,9 @@ export default async function BlogPostPage({ params }: PostPageProps) {
   }
 
   return (
-    <div className="relative min-h-screen selection:bg-emerald-500 selection:text-white">
-      {/* Background Lighting */}
-      <div className="pointer-events-none absolute top-0 left-1/2 -z-10 h-[500px] w-[900px] -translate-x-1/2 bg-gradient-to-tr from-emerald-500/10 via-teal-500/5 to-transparent blur-3xl" />
+    <div className="relative min-h-screen selection:bg-[var(--foreground)] selection:text-[var(--background)]">
+      {/* Optional theme-based background lighting (or remove entirely) */}
+      <div className="pointer-events-none absolute top-0 left-1/2 -z-10 h-[500px] w-[900px] -translate-x-1/2 bg-[var(--foreground)]/[0.02] blur-3xl" />
 
       <Nav />
 
@@ -108,7 +108,7 @@ export default async function BlogPostPage({ params }: PostPageProps) {
         <div className="mb-10">
           <Link
             href="/blogs"
-            className="group inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider text-[var(--foreground)]/60 transition-colors hover:text-emerald-500"
+            className="group inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider text-[var(--foreground)]/60 transition-colors hover:text-[var(--foreground)]"
           >
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
             Back to all articles
@@ -123,14 +123,14 @@ export default async function BlogPostPage({ params }: PostPageProps) {
               post.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-[var(--foreground)]/10 px-3 py-1 font-mono text-xs font-semibold text-[var(--foreground)]/80"
                 >
                   <Tag className="h-3 w-3" />
                   {tag}
                 </span>
               ))
             ) : (
-              <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              <span className="inline-flex items-center rounded-full bg-[var(--foreground)]/10 px-3 py-1 font-mono text-xs font-semibold text-[var(--foreground)]/80">
                 {post.category}
               </span>
             )}
@@ -143,7 +143,7 @@ export default async function BlogPostPage({ params }: PostPageProps) {
 
           {/* Date Metadata */}
           <div className="flex items-center gap-2 font-mono text-xs text-[var(--foreground)]/50 pt-2">
-            <Calendar className="h-4 w-4 text-emerald-500" />
+            <Calendar className="h-4 w-4 text-[var(--foreground)]/70" />
             <span>{post.date}</span>
           </div>
 

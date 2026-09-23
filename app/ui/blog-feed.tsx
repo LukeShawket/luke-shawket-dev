@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Calendar, Filter, X } from "lucide-react";
+import { ArrowUpRight, Calendar, X } from "lucide-react";
 import { BlogPost } from "@/app/lib/posts";
 
 interface BlogFeedProps {
@@ -97,7 +97,7 @@ export function BlogFeed({ posts }: BlogFeedProps) {
                 setSelectedYear("ALL");
                 setSelectedTag("ALL");
               }}
-              className="inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 transition-colors mr-1"
+              className="inline-flex items-center gap-1 text-[var(--foreground)] hover:opacity-70 transition-opacity mr-1 cursor-pointer"
               title="Clear filters"
             >
               <X className="h-3 w-3" />
@@ -110,7 +110,7 @@ export function BlogFeed({ posts }: BlogFeedProps) {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="rounded-lg border border-[var(--foreground)]/10 bg-[var(--foreground)]/5 px-2 py-1 text-xs text-[var(--foreground)]/70 focus:border-emerald-500 focus:outline-none cursor-pointer"
+              className="rounded-lg border border-[var(--foreground)]/15 bg-[var(--background)] px-2 py-1 text-xs text-[var(--foreground)]/80 focus:border-[var(--foreground)]/40 focus:outline-none cursor-pointer"
             >
               <option value="ALL">Year: All</option>
               {availableYears.map((year) => (
@@ -126,7 +126,7 @@ export function BlogFeed({ posts }: BlogFeedProps) {
             <select
               value={selectedTag}
               onChange={(e) => setSelectedTag(e.target.value)}
-              className="rounded-lg border border-[var(--foreground)]/10 bg-[var(--foreground)]/5 px-2 py-1 text-xs text-[var(--foreground)]/70 focus:border-emerald-500 focus:outline-none cursor-pointer"
+              className="rounded-lg border border-[var(--foreground)]/15 bg-[var(--background)] px-2 py-1 text-xs text-[var(--foreground)]/80 focus:border-[var(--foreground)]/40 focus:outline-none cursor-pointer"
             >
               <option value="ALL">Tag: All</option>
               {availableTags.map((tag) => (
@@ -143,7 +143,7 @@ export function BlogFeed({ posts }: BlogFeedProps) {
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="max-h-[560px] overflow-y-auto overflow-x-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden divide-y divide-[var(--foreground)]/10 border-t border-b border-[var(--foreground)]/10 py-2"
+        className="max-h-[560px] overflow-y-auto overflow-x-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden divide-y divide-[var(--foreground)]/10 border-t border-b border-[var(--foreground)]/15 py-2"
         style={{ scrollBehavior: "smooth" }}
       >
         {filteredPosts.length === 0 ? (
@@ -167,19 +167,19 @@ export function BlogFeed({ posts }: BlogFeedProps) {
                       post.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400"
+                          className="inline-flex items-center rounded-md bg-[var(--foreground)]/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-[var(--foreground)]/80"
                         >
                           {tag}
                         </span>
                       ))
                     ) : (
-                      <span className="font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                      <span className="font-mono text-xs font-semibold text-[var(--foreground)]/70">
                         {post.category}
                       </span>
                     )}
                   </div>
 
-                  {/* Date Metadata Only */}
+                  {/* Date Metadata */}
                   <div className="flex items-center gap-3 font-mono text-xs text-[var(--foreground)]/50">
                     <span className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
@@ -188,9 +188,9 @@ export function BlogFeed({ posts }: BlogFeedProps) {
                   </div>
                 </div>
 
-                <h3 className="mt-2 text-xl font-bold tracking-tight transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400 flex items-center justify-between">
+                <h3 className="mt-2 text-xl font-bold tracking-tight text-[var(--foreground)] group-hover:underline flex items-center justify-between">
                   <span>{post.title}</span>
-                  <ArrowUpRight className="h-4 w-4 opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-emerald-500" />
+                  <ArrowUpRight className="h-4 w-4 opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-[var(--foreground)]" />
                 </h3>
 
                 {post.snippet && (

@@ -9,10 +9,10 @@ export default async function BlogsPage() {
 
   if (!posts || posts.length === 0) {
     return (
-      <div className="relative min-h-screen">
+      <div className="relative min-h-screen selection:bg-[var(--foreground)] selection:text-[var(--background)]">
         <Nav />
-        <main className="mx-auto max-w-5xl px-6 pt-16">
-          <h1 className="text-3xl font-bold">No posts found.</h1>
+        <main className="mx-auto max-w-4xl px-6 pt-16">
+          <h1 className="text-3xl font-extrabold text-[var(--foreground)]">No posts found.</h1>
         </main>
       </div>
     );
@@ -23,20 +23,13 @@ export default async function BlogsPage() {
   const regularPosts = posts.filter((post) => post.slug !== latestPost.slug);
 
   return (
-    <div className="relative min-h-screen selection:bg-emerald-500 selection:text-white">
-      {/* Background Glow Effect */}
-      <div className="pointer-events-none absolute top-0 left-1/2 -z-10 h-[400px] w-[800px] -translate-x-1/2 bg-gradient-to-tr from-emerald-500/10 via-teal-500/5 to-transparent blur-3xl" />
-
+    <div className="relative min-h-screen selection:bg-[var(--foreground)] selection:text-[var(--background)]">
       <Nav />
 
-      <main className="mx-auto max-w-5xl px-6 pt-16 pb-24">
+      <main className="mx-auto max-w-4xl px-6 pt-16 pb-24">
         {/* Header Section */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-            <Sparkles className="h-4 w-4" />
-            Writings
-          </div>
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl">
+        <section className="space-y-4 border-b border-[var(--foreground)]/15 pb-10">
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl text-[var(--foreground)]">
             Blogs &amp; Thoughts
           </h1>
           <p className="max-w-2xl text-lg text-[var(--foreground)]/70">
@@ -49,12 +42,11 @@ export default async function BlogsPage() {
           <section className="mt-12">
             <Link
               href={`/blogs/${latestPost.slug}`}
-              className="group relative block overflow-hidden rounded-3xl border border-[var(--foreground)]/10 bg-[var(--foreground)]/5 p-8 backdrop-blur-md transition-all duration-300 hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/5"
+              className="group relative block overflow-hidden rounded-2xl border border-[var(--foreground)]/15 bg-[var(--foreground)]/[0.02] p-8 transition-all duration-200 hover:border-[var(--foreground)]/40 hover:bg-[var(--foreground)]/[0.05]"
             >
               <div className="flex flex-wrap items-center justify-between gap-4">
                 {/* Badge: Latest Post */}
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                  <Sparkles className="h-3 w-3" />
+                <span className="inline-flex items-center gap-1.5 rounded-md border border-[var(--foreground)]/15 bg-[var(--foreground)]/10 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-wider text-[var(--foreground)]/80">
                   Latest Post
                 </span>
 
@@ -66,7 +58,7 @@ export default async function BlogsPage() {
                 </div>
               </div>
 
-              <h2 className="mt-6 text-2xl font-bold tracking-tight sm:text-3xl transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+              <h2 className="mt-6 text-2xl font-bold tracking-tight sm:text-3xl text-[var(--foreground)] transition-colors group-hover:underline">
                 {latestPost.title}
               </h2>
 
@@ -80,7 +72,7 @@ export default async function BlogsPage() {
                   {latestPost.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400"
+                      className="inline-flex items-center rounded-md bg-[var(--foreground)]/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-[var(--foreground)]/80"
                     >
                       {tag}
                     </span>
@@ -88,7 +80,7 @@ export default async function BlogsPage() {
                 </div>
               )}
 
-              <div className="mt-6 flex items-center gap-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+              <div className="mt-6 flex items-center gap-1 text-sm font-semibold text-[var(--foreground)] underline underline-offset-4 group-hover:opacity-70">
                 Read full article
                 <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </div>
@@ -97,7 +89,7 @@ export default async function BlogsPage() {
         )}
 
         {/* Articles Feed */}
-        <section className="mt-16 space-y-4">
+        <section className="mt-12 space-y-4">
           <BlogFeed posts={regularPosts.length > 0 ? regularPosts : posts} />
         </section>
       </main>

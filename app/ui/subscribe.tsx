@@ -1,68 +1,59 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Wrench, ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 
 export default function Subscribe() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "notice">("idle");
+  const [status, setStatus] = useState<"idle" | "subscribed" | "notice">("idle");
+
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isValidEmail) return;
     setStatus("notice");
   };
 
   return (
-    <section className="py-10 my-8 rounded-3xl border border-[var(--foreground)]/10 bg-[var(--foreground)]/5 p-8 backdrop-blur-md relative overflow-hidden">
-      {/* Ambient background glow */}
-      <div className="absolute -top-16 -right-16 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="mt-8 w-full">
+      <form onSubmit={handleSubmit} className="relative flex w-full items-center">
+        <input
+          type="email"
+          placeholder="Subscribe via email..."
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (status !== "idle") setStatus("idle");
+          }}
+          className="w-full rounded-full border border-[var(--foreground)]/15 bg-[var(--foreground)]/[0.03] pl-5 pr-14 py-3.5 text-sm text-[var(--foreground)] placeholder:text-[var(--foreground)]/40 focus:border-[var(--foreground)]/40 focus:bg-transparent focus:outline-none transition-all duration-200"
+        />
 
-      <div className="relative z-10 max-w-xl">
-        {/* Category Label + Under Construction Badge */}
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-            <Mail className="h-3.5 w-3.5" />
-            UPDATES
-          </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-amber-600 dark:text-amber-400 border border-amber-500/20">
-            <Wrench className="h-3 w-3" />
-            WIP / Self-Hosting Soon
-          </span>
-        </div>
-
-        {/* Heading & Subtitle */}
-        <h3 className="mt-3 text-xl font-bold tracking-tight sm:text-2xl">
-          Get notified on new posts
-        </h3>
-        <p className="mt-2 text-sm text-[var(--foreground)]/70 leading-relaxed">
-          Subscribe to get occasional updates on new posts. 
-        </p>
-
-        {/* Subscription Form */}
-        <form onSubmit={handleSubmit} className="mt-6 flex flex-col sm:flex-row gap-3">
-          <input
-            type="email"
-            placeholder="enter your email..."
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="flex-1 rounded-2xl border border-[var(--foreground)]/15 bg-[var(--foreground)]/5 px-4 py-3 text-sm text-[var(--foreground)] placeholder:text-[var(--foreground)]/40 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
-          />
-          <button
-            type="submit"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-6 py-3 text-sm transition-all shadow-md shadow-emerald-500/20 cursor-pointer shrink-0"
-          >
-            <span>Subscribe</span>
+        {/* Animated Inline Button Indicator */}
+        <button
+          type="submit"
+          disabled={!isValidEmail}
+          aria-label="Submit Email Subscription"
+          className={`absolute right-1.5 flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 ${
+            isValidEmail
+              ? "bg-[var(--foreground)] text-[var(--background)] opacity-100 scale-100 cursor-pointer shadow-sm hover:opacity-90 active:scale-95"
+              : "bg-[var(--foreground)]/10 text-[var(--foreground)]/30 opacity-0 scale-75 pointer-events-none"
+          }`}
+        >
+          {status === "subscribed" ? (
+            <Check className="h-4 w-4" />
+          ) : (
             <ArrowRight className="h-4 w-4" />
-          </button>
-        </form>
+          )}
+        </button>
+      </form>
 
-        {/* Dynamic Notice when they try to click */}
-        {status === "notice" && (
-          <p className="mt-3 font-mono text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-            <span>ℹ️</span> Subscriptions are paused while homelab mail server is being built. Check back soon!
-          </p>
-        )}
-      </div>
-    </section>
+      {/* Status Notice Message */}
+      {status === "notice" && (
+        <p className="mt-2.5 font-mono text-xs text-[var(--foreground)]/70 flex items-center gap-1.5 px-2">
+          <span>ℹ️</span> Subscriptions paused while mail server is being built.
+        </p>
+      )}
+    </div>
   );
 }
