@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 :root {
   /* Warm, creamy light mocha */
   --background: #F5E8D8;
@@ -21,8 +19,7 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-
-/* Enable smooth View Transitions for root theme switching */
+/* Smooth View Transitions for theme switching */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation-duration: 0.4s;
