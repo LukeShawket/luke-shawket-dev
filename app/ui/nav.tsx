@@ -30,8 +30,18 @@ function FilledUser({ className = "w-6 h-6" }: { className?: string }) {
   );
 }
 
-// Module-level cache: survives Next.js page re-renders/mounts!
-let globalLastNavRect: { left: number; width: number } | null = null;
+interface SliderStyle {
+  left: number;
+  width: number;
+  top: number;
+  height: number;
+  opacity: number;
+  isInitial: boolean;
+  isVertical: boolean;
+}
+
+// Module-level cache: survives Next.js page re-renders/mounts
+let globalLastNavRect: { left: number; width: number; top: number; height: number; isVertical: boolean } | null = null;
 
 export function Nav() {
   const pathname = usePathname();
@@ -44,60 +54,90 @@ export function Nav() {
 
   const navRefs = useRef<(HTMLAnchorElement | null)[]>([]);
 
-  // Initialize with the cached previous position if it exists
-  const [sliderStyle, setSliderStyle] = useState(() => {
+  const [sliderStyle, setSliderStyle] = useState<SliderStyle>(() => {
     if (globalLastNavRect) {
       return {
-        left: globalLastNavRect.left,
-        width: globalLastNavRect.width,
+        ...globalLastNavRect,
         opacity: 1,
         isInitial: false,
       };
     }
-    return { left: 0, width: 0, opacity: 0, isInitial: true };
+    return { left: 0, width: 0, top: 0, height: 0, opacity: 0, isInitial: true, isVertical: false };
   });
 
   useLayoutEffect(() => {
-    const activeIndex = navLinks.findIndex((link) =>
-      link.href === '/' ? pathname === '/' : pathname.startsWith(link.href)
-    );
+    const updatePosition = () => {
+      const isVertical = window.innerWidth >= 640; // sm breakpoint in Tailwind (640px)
 
-    if (activeIndex !== -1 && navRefs.current[activeIndex]) {
-      const activeEl = navRefs.current[activeIndex];
-      if (activeEl) {
-        const targetLeft = activeEl.offsetLeft;
-        const targetWidth = activeEl.offsetWidth;
+      const activeIndex = navLinks.findIndex((link) =>
+        link.href === '/' ? pathname === '/' : pathname.startsWith(link.href)
+      );
 
-        // Trigger animation from previous position to target position
-        requestAnimationFrame(() => {
-          setSliderStyle({
+      if (activeIndex !== -1 && navRefs.current[activeIndex]) {
+        const activeEl = navRefs.current[activeIndex];
+        if (activeEl) {
+          const targetLeft = activeEl.offsetLeft;
+          const targetWidth = activeEl.offsetWidth;
+          const targetTop = activeEl.offsetTop;
+          const targetHeight = activeEl.offsetHeight;
+
+          requestAnimationFrame(() => {
+            setSliderStyle({
+              left: targetLeft,
+              width: targetWidth,
+              top: targetTop,
+              height: targetHeight,
+              opacity: 1,
+              isInitial: false,
+              isVertical,
+            });
+          });
+
+          globalLastNavRect = {
             left: targetLeft,
             width: targetWidth,
-            opacity: 1,
-            isInitial: false,
-          });
-        });
-
-        // Save target rect in module memory for the next page transition
-        globalLastNavRect = { left: targetLeft, width: targetWidth };
+            top: targetTop,
+            height: targetHeight,
+            isVertical,
+          };
+        }
       }
-    }
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    return () => window.removeEventListener('resize', updatePosition);
   }, [pathname]);
 
   return (
-    <header className="sticky top-6 z-50 flex justify-center px-4">
-      <div className="relative flex items-center gap-2 py-1">
-        <nav className="relative flex items-center gap-1 sm:gap-1.5" aria-label="Main Navigation">
-          {/* Directional Sliding Pill */}
+    // Container: Floating Top on Mobile, Floating Left on Desktop (sm)
+    <aside className="fixed top-4 left-1/2 -translate-x-1/2 z-50 sm:top-1/2 sm:left-24 sm:translate-x-0 sm:-translate-y-1/2">
+      {/* Floating Capsule Bar with higher transparency */}
+      <div className="relative flex flex-row sm:flex-col items-center gap-2 rounded-full border border-[var(--foreground)]/10 bg-[var(--background)]/30 p-1.5 sm:p-2 shadow-lg backdrop-blur-md">
+        <nav className="relative flex flex-row sm:flex-col items-center gap-1 sm:gap-1.5" aria-label="Main Navigation">
+          {/* Responsive Directional Sliding Pill */}
           <span
-            className={`absolute top-0 bottom-0 rounded-full bg-[var(--foreground)] ${
+            className={`absolute rounded-full bg-[var(--foreground)] ${
               sliderStyle.isInitial
                 ? 'transition-none'
                 : 'transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]'
             }`}
             style={{
-              left: `${sliderStyle.left}px`,
-              width: `${sliderStyle.width}px`,
+              ...(sliderStyle.isVertical
+                ? {
+                    top: `${sliderStyle.top}px`,
+                    height: `${sliderStyle.height}px`,
+                    left: 0,
+                    right: 0,
+                    width: 'auto',
+                  }
+                : {
+                    left: `${sliderStyle.left}px`,
+                    width: `${sliderStyle.width}px`,
+                    top: 0,
+                    bottom: 0,
+                    height: 'auto',
+                  }),
               opacity: sliderStyle.opacity,
             }}
           />
@@ -115,7 +155,7 @@ export function Nav() {
                 href={link.href}
                 aria-label={link.label}
                 aria-current={isActive ? 'page' : undefined}
-                className={`relative z-10 flex h-10 w-12 sm:w-14 items-center justify-center rounded-full transition-colors duration-300 ${
+                className={`relative z-10 flex h-10 w-12 sm:h-12 sm:w-12 items-center justify-center rounded-full transition-colors duration-300 ${
                   isActive
                     ? 'text-[var(--background)]'
                     : 'text-[var(--foreground)]/50 hover:text-[var(--foreground)]'
@@ -127,12 +167,13 @@ export function Nav() {
           })}
         </nav>
 
-        <div className="h-5 w-[1px] bg-[var(--foreground)]/20 mx-0.5" />
+        {/* Divider line rotates on breakpoint */}
+        <div className="h-5 w-[1px] sm:h-[1px] sm:w-5 bg-[var(--foreground)]/20 my-0 sm:my-0.5 mx-0.5 sm:mx-0" />
 
         <div className="p-0.5 text-[var(--foreground)]/70 hover:text-[var(--foreground)]">
           <ThemeToggle />
         </div>
       </div>
-    </header>
+    </aside>
   );
 }

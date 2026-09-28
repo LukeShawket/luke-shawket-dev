@@ -43,7 +43,7 @@ export default async function Home() {
           {/* Key Highlights */}
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs text-[var(--foreground)]/60">
             <span>• Business Systems Analyst</span>
-            <span>• Python, C#, Jave Script, C++ &amp; HTML, CSS</span>
+            <span>• Python, SQL, C#, Jave Script, C++ &amp; HTML, CSS</span>
             <span>• B.S. Public Administration</span>
           </div>
 

@@ -1,15 +1,13 @@
 // components/footer.tsx
 import Link from "next/link";
-import Image from "next/image";
 
 export function Footer() {
-
   const socialLinks = [
     {
       name: "GitHub",
       href: "https://github.com/LukeShawket",
       icon: (
-        <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+        <svg className="h-5 w-5 fill-current transition-transform duration-200 group-hover:scale-110" viewBox="0 0 24 24" aria-hidden="true">
           <path
             fillRule="evenodd"
             clipRule="evenodd"
@@ -22,7 +20,7 @@ export function Footer() {
       name: "LinkedIn",
       href: "https://www.linkedin.com/in/lukeshawket",
       icon: (
-        <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+        <svg className="h-5 w-5 fill-current transition-transform duration-200 group-hover:scale-110" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.7a1.63 1.63 0 1 0 0 3.26 1.63 1.63 0 0 0 0-3.26z" />
         </svg>
       ),
@@ -31,27 +29,18 @@ export function Footer() {
       name: "itch.io",
       href: "https://pixelluke.itch.io/",
       icon: (
-        <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3.208 2.5a.708.708 0 0 0-.708.708v.025c0 .324.223.606.539.683l.89.215v15.738a.708.708 0 0 0 .708.708h14.722a.708.708 0 0 0 .708-.708V4.131l.89-.215a.708.708 0 0 0 .539-.683v-.025a.708.708 0 0 0-.708-.708H3.208zm3.208 4.25h11.168v11.168H6.416V6.75zm1.884 2.12a.708.708 0 0 0-.708.708v2.834a.708.708 0 0 0 1.416 0V9.578a.708.708 0 0 0-.708-.708zm7.4 0a.708.708 0 0 0-.708.708v2.834a.708.708 0 0 0 1.416 0V9.578a.708.708 0 0 0-.708-.708z" />
+        <svg className="h-5 w-5 fill-current transition-transform duration-200 group-hover:scale-110" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M2.5 5.5A2.5 2.5 0 0 1 5 3h14a2.5 2.5 0 0 1 2.5 2.5v13a2.5 2.5 0 0 1-2.5 2.5H5a2.5 2.5 0 0 1-2.5-2.5v-13zM6.5 9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM10.5 14.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0z" />
         </svg>
       ),
     },
   ];
 
   return (
-    <footer className="mx-auto max-w-5xl px-6 py-12 border-t border-[var(--foreground)]/10">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-        {/* Brand & Copyright */}
-        <div className="flex items-center gap-2">
-          
-          <p className="font-mono text-xs text-[var(--foreground)]/50">
-            © {new Date().getFullYear()} Luke Shawket
-          </p>
-        </div>
-
-
-        {/* Social Links with Icons */}
-        <div className="flex items-center gap-3">
+    <footer className="mx-auto max-w-5xl px-6 py-16 border-t border-[var(--foreground)]/10">
+      <div className="flex flex-col items-center justify-center gap-8 text-center">
+        {/* Larger Dynamic Theme Social Links */}
+        <div className="flex flex-wrap items-center justify-center gap-3">
           {socialLinks.map((social) => (
             <a
               key={social.name}
@@ -59,13 +48,20 @@ export function Footer() {
               target="_blank"
               rel="noreferrer"
               aria-label={social.name}
-              className="flex items-center gap-1.5 rounded-lg p-2 text-[var(--foreground)]/60 transition-colors hover:bg-[var(--foreground)]/5 hover:text-emerald-600 dark:hover:text-emerald-400"
+              className="group relative inline-flex items-center gap-2.5 rounded-full border border-transparent px-4 py-2.5 text-[var(--foreground)]/70 transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--foreground)]/15 hover:bg-[var(--foreground)]/10 hover:text-[var(--foreground)] hover:shadow-md"
             >
               {social.icon}
-              <span className="font-mono text-xs font-medium">{social.name}</span>
+              <span className="font-mono text-sm font-semibold tracking-tight">
+                {social.name}
+              </span>
             </a>
           ))}
         </div>
+
+        {/* Larger Copyright & Brand text without TM */}
+        <p className="font-mono text-sm font-medium text-[var(--foreground)]/70">
+          © {new Date().getFullYear()} Luke Shawket • All rights reserved
+        </p>
       </div>
     </footer>
   );
