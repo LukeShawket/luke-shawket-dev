@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Nav } from "@/app/ui/nav";
 import { Sparkles, ArrowUpRight, Calendar } from "lucide-react";
 import { getAllPosts } from "@/app/lib/posts";
 import { BlogFeed } from "@/app/ui/blog-feed";
+
+// Explicit metadata for the Blogs page
+export const metadata: Metadata = {
+  title: "Blogs",
+  description: "Long-form writing on code, technology, and everything in between.",
+};
 
 export default async function BlogsPage() {
   const posts = await getAllPosts();

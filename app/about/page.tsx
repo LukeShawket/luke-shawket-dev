@@ -15,7 +15,7 @@ import {
 import { getAboutWebsitePost } from "@/app/lib/posts";
 
 export const metadata: Metadata = {
-  title: "About | Luke Shawket",
+  title: "About",
   description: "Learn more about Luke Shawket, background, technical skills, and experience.",
 };
 
