@@ -44,7 +44,8 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="flex-1 w-full max-w-full overflow-x-hidden">
-            <main className="w-full max-w-4xl mx-auto px-4 sm:px-6">
+            {/* pt-20 on mobile gives room for top floating nav; sm:pt-0 leaves desktop layout as-is */}
+            <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-20 sm:pt-0">
               {children}
             </main>
           </div>
