@@ -12,11 +12,6 @@ export interface BlogPost {
   content?: string;
 }
 
-export async function getLatestPosts(limit: number = 10): Promise<BlogPost[]> {
-  const posts = await getAllPosts();
-  return posts.slice(0, limit);
-}
-
 /**
  * Converts strings or file names with spaces/uppercase into clean URL-safe slugs
  */
@@ -29,6 +24,28 @@ export function slugify(text: string): string {
     .replace(/\s+/g, "-") // Convert spaces to hyphens
     .replace(/[^\w\-]+/g, "") // Remove remaining non-word characters
     .replace(/\-\-+/g, "-"); // Collapse multiple hyphens
+}
+
+/**
+ * Rewrites relative image paths (/images/... or images/...) in Markdown & HTML tags
+ * to point to full raw.githubusercontent.com URLs.
+ */
+function fixImageUrls(content: string): string {
+  const rawBaseUrl = "https://raw.githubusercontent.com/LukeShawket/blogs/main";
+
+  // Fix Markdown syntax: ![alt](/images/...) or ![alt](images/...)
+  let fixed = content.replace(
+    /!\[(.*?)\]\(\s*\/??(images\/.*?)\s*\)/g,
+    `![$1](${rawBaseUrl}/$2)`
+  );
+
+  // Fix HTML tag syntax: <img ... src="/images/..." ... /> or src="images/..."
+  fixed = fixed.replace(
+    /<img([^>]*)\ssrc=["']\/??(images\/[^"']+)["']([^>]*)>/g,
+    `<img$1 src="${rawBaseUrl}/$2"$3>`
+  );
+
+  return fixed;
 }
 
 export async function getAllPosts(): Promise<BlogPost[]> {
@@ -80,17 +97,19 @@ export async function getAllPosts(): Promise<BlogPost[]> {
           String(tag).replace(/^#/, "").trim()
         );
 
+        // Convert relative image URLs to raw GitHub URLs
+        const processedContent = content ? fixImageUrls(content) : undefined;
+
         return {
           title: frontmatter.title || "Untitled Post",
-          slug: slugify(rawSlug), // Ensures every stored slug is normalized
+          slug: slugify(rawSlug),
           date: frontmatter.date ? String(frontmatter.date) : "Recent",
-          category:
-            frontmatter.category || cleanedTags[0] || "General",
+          category: frontmatter.category || cleanedTags[0] || "General",
           snippet: frontmatter.description || frontmatter.snippet || "",
           tags: cleanedTags,
           published: frontmatter.published !== false,
           featured: Boolean(frontmatter.featured),
-          content: content || undefined,
+          content: processedContent,
         };
       })
     );
@@ -102,6 +121,11 @@ export async function getAllPosts(): Promise<BlogPost[]> {
     console.error("Error fetching posts from GitHub:", error);
     return [];
   }
+}
+
+export async function getLatestPosts(limit: number = 10): Promise<BlogPost[]> {
+  const posts = await getAllPosts();
+  return posts.slice(0, limit);
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {

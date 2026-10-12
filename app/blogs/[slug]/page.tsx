@@ -66,9 +66,14 @@ const mdxComponents = {
       {...props}
     />
   ),
-  img: (props: any) => (
+  img: ({ className, alt, src, ...props }: any) => (
     <span className="my-8 block overflow-hidden rounded-2xl border border-[var(--foreground)]/10">
-      <img className="w-full object-cover" {...props} />
+      <img
+        src={src}
+        alt={alt || "Blog content image"}
+        className={`w-full object-cover ${className || ""}`}
+        {...props}
+      />
     </span>
   ),
 };
@@ -97,9 +102,6 @@ export default async function BlogPostPage({ params }: PostPageProps) {
 
   return (
     <div className="relative min-h-screen selection:bg-[var(--foreground)] selection:text-[var(--background)]">
-      {/* Optional theme-based background lighting (or remove entirely) */}
-      <div className="pointer-events-none absolute top-0 left-1/2 -z-10 h-[500px] w-[900px] -translate-x-1/2 bg-[var(--foreground)]/[0.02] blur-3xl" />
-
       <Nav />
 
       {/* Main Container */}
