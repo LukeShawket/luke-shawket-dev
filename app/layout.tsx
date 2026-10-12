@@ -21,6 +21,9 @@ export const metadata: Metadata = {
     template: "%s | Luke Shawket",
   },
   description: "Personal Website, projects, blogs, and experiments.",
+  verification: {
+    google: "google6710fb3401ef1e29", // Extracted from your token
+  },
 };
 
 export default function RootLayout({
