@@ -11,6 +11,7 @@ export const metadata: Metadata = {
     absolute: "Blogs",
   },
   description: "Long-form writing on code, technology, and everything in between.",
+  
 };
 
 export default async function BlogsPage() {
