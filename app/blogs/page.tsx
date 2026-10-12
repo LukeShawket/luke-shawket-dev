@@ -7,7 +7,9 @@ import { BlogFeed } from "@/app/ui/blog-feed";
 
 // Explicit metadata for the Blogs page
 export const metadata: Metadata = {
-  title: "Blogs",
+  title: {
+    absolute: "Blogs",
+  },
   description: "Long-form writing on code, technology, and everything in between.",
 };
 
