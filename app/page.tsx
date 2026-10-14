@@ -38,6 +38,15 @@ export default async function Home() {
                 Read more about me.
               </Link>
             </p>
+            <p>
+              Building video games has always been a big passion of mine.{" "}
+              <Link
+                href="https://pixelluke.itch.io/leap-lad-html"
+                className="underline decoration-[var(--foreground)]/30 underline-offset-4 hover:decoration-[var(--foreground)] transition-colors"
+              >
+                Check out a playable demo →
+              </Link>
+            </p>
           </div>
 
           {/* Key Highlights */}

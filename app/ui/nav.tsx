@@ -40,7 +40,6 @@ interface SliderStyle {
   isVertical: boolean;
 }
 
-// Module-level cache: survives Next.js page re-renders/mounts
 let globalLastNavRect: { left: number; width: number; top: number; height: number; isVertical: boolean } | null = null;
 
 export function Nav() {
@@ -67,7 +66,7 @@ export function Nav() {
 
   useLayoutEffect(() => {
     const updatePosition = () => {
-      const isVertical = window.innerWidth >= 640; // sm breakpoint in Tailwind (640px)
+      const isVertical = window.innerWidth >= 640;
 
       const activeIndex = navLinks.findIndex((link) =>
         link.href === '/' ? pathname === '/' : pathname.startsWith(link.href)
@@ -110,12 +109,9 @@ export function Nav() {
   }, [pathname]);
 
   return (
-    // Container: Floating Top on Mobile, Floating Left on Desktop (sm)
     <aside className="fixed top-4 left-1/2 -translate-x-1/2 z-50 sm:top-1/2 sm:left-24 sm:translate-x-0 sm:-translate-y-1/2">
-      {/* Floating Capsule Bar with higher transparency */}
       <div className="relative flex flex-row sm:flex-col items-center gap-2 rounded-full border border-[var(--foreground)]/10 bg-[var(--background)]/30 p-1.5 sm:p-2 shadow-lg backdrop-blur-md">
         <nav className="relative flex flex-row sm:flex-col items-center gap-1 sm:gap-1.5" aria-label="Main Navigation">
-          {/* Responsive Directional Sliding Pill */}
           <span
             className={`absolute rounded-full bg-[var(--foreground)] ${
               sliderStyle.isInitial
@@ -153,6 +149,7 @@ export function Nav() {
                   navRefs.current[index] = el;
                 }}
                 href={link.href}
+                title={link.name}
                 aria-label={link.label}
                 aria-current={isActive ? 'page' : undefined}
                 className={`relative z-10 flex h-10 w-12 sm:h-12 sm:w-12 items-center justify-center rounded-full transition-colors duration-300 ${
@@ -167,7 +164,6 @@ export function Nav() {
           })}
         </nav>
 
-        {/* Divider line rotates on breakpoint */}
         <div className="h-5 w-[1px] sm:h-[1px] sm:w-5 bg-[var(--foreground)]/20 my-0 sm:my-0.5 mx-0.5 sm:mx-0" />
 
         <div className="p-0.5 text-[var(--foreground)]/70 hover:text-[var(--foreground)]">
