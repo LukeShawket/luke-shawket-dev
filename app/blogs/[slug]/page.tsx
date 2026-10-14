@@ -4,6 +4,37 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { ArrowLeft, Calendar, Tag } from "lucide-react";
 import { Nav } from "@/app/ui/nav";
 import { getAllPosts, getPostBySlug, slugify } from "@/app/lib/posts";
+import type { Metadata } from "next";
+
+interface PostPageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const cleanSlug = slugify(resolvedParams.slug);
+  const post = await getPostBySlug(cleanSlug);
+
+  if (!post) {
+    return { title: "Post Not Found" };
+  }
+
+  return {
+    // Setting title explicitly per post keeps it clean in Google search results
+    title: `${post.title} | Luke Shawket`,
+    description: post.snippet || `Read ${post.title} on Luke Shawket's blog.`,
+    alternates: {
+      canonical: `https://lukeshawket.com/blogs/${post.slug}`,
+    },
+    openGraph: {
+      title: post.title,
+      description: post.snippet,
+      url: `https://lukeshawket.com/blogs/${post.slug}`,
+      type: "article",
+      publishedTime: post.date,
+    },
+  };
+}
 
 export const dynamicParams = true;
 
